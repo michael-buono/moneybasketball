@@ -44,6 +44,6 @@ Thumbs.db
 *.wmv
 
 # venv settings
-shot_diet/venv/
+backend/venv/
 shot_diet.db
 instance/
