@@ -1,7 +1,9 @@
-from shot_diet.app import db
 import pandas as pd
 
-# 
+from shot_diet.app import db
+
+
+#
 # Sample team hash:
 # {'id': 1610612737,
 #   'full_name': 'Atlanta Hawks',
@@ -20,18 +22,21 @@ class Team(db.Model):
     city = db.Column(db.String(255))
     team_id = db.Column(db.Integer, nullable=False)
 
-    player_shot_team_years = db.relationship('PlayerShotTeamYear', backref='team', lazy=True)
+    player_shot_team_years = db.relationship(
+        "PlayerShotTeamYear", backref="team", lazy=True
+    )
 
     def get_data_frames(self):
         # Convert the shot instance to a dictionary
         d = self.__dict__
 
         # Remove SQLAlchemy internal keys from the shot dictionary
-        d.pop('_sa_instance_state', None)
+        d.pop("_sa_instance_state", None)
 
         # Create a data frame from the shot dictionary
         df = pd.DataFrame.from_records([d])
 
         return df
+
     def __repr__(self):
         return f"<Team id={self.id} team_id={self.team_id} full_name={self.full_name}>"

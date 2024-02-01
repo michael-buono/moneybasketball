@@ -5,13 +5,13 @@ Revises: d107a11af626
 Create Date: 2023-06-30 11:11:59.191089
 
 """
-from alembic import op
-import sqlalchemy as sa
 
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = '7d5e3e13ffc6'
-down_revision = 'd107a11af626'
+revision = "7d5e3e13ffc6"
+down_revision = "d107a11af626"
 branch_labels = None
 depends_on = None
 
@@ -51,22 +51,28 @@ def upgrade():
         sa.Column("season_year", sa.String(length=100), nullable=True),
         sa.Column("shot_value", sa.Integer(), nullable=True),
         sa.Column("shot_result", sa.String(length=100), nullable=True),
-        sa.ForeignKeyConstraint(['TEAM_ID'], ['team.team_id'], name='fk_shot_team_id'),
-        sa.ForeignKeyConstraint(['PLAYER_ID'], ['player.PLAYER_ID'], name='fk_shot_player_id'),
-        sa.ForeignKeyConstraint(['player_shot_team_year_id'], ['player_shot_team_year.id'], name='fk_shot_player_shot_team_year_id'),
+        sa.ForeignKeyConstraint(["TEAM_ID"], ["team.team_id"], name="fk_shot_team_id"),
+        sa.ForeignKeyConstraint(
+            ["PLAYER_ID"], ["player.PLAYER_ID"], name="fk_shot_player_id"
+        ),
+        sa.ForeignKeyConstraint(
+            ["player_shot_team_year_id"],
+            ["player_shot_team_year.id"],
+            name="fk_shot_player_shot_team_year_id",
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
 
     # Copy data from the original shot table to the temporary table
     op.execute(f"INSERT INTO {tmp_table_name} SELECT * FROM shot")
-    
+
     # Drop the original table
-    op.drop_table('shot')
+    op.drop_table("shot")
 
     # Rename the temporary table to the original table name
-    op.rename_table(tmp_table_name, 'shot')
+    op.rename_table(tmp_table_name, "shot")
 
-    
+
 def downgrade():
     op.create_table(
         tmp_table_name,
@@ -105,7 +111,7 @@ def downgrade():
     # Copy data from the original shot table to the temporary table
     op.execute(f"INSERT INTO {tmp_table_name} SELECT * FROM shot")
     # Drop the original table
-    op.drop_table('shot')
+    op.drop_table("shot")
 
     # Rename the temporary table to the original table name
-    op.rename_table(tmp_table_name, 'shot')
+    op.rename_table(tmp_table_name, "shot")
