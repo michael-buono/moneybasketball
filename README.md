@@ -73,3 +73,12 @@ To add any npm packages, run
 To add any python packages, ensure you are running in the virtual environment, install the required packages, and then output the results of `pip freeze` to `backend/requirements.txt`.
     cd backend
     pip freeze > requirements.txt
+
+## Makefile
+You can find helpful commands for linting and autolinting in the `Makefile`. For example, to execute the lint checks, which are a prequisite for merging to `main`, run:
+
+    make lint
+
+To lint in place (using the `eslint` and `prettier` npm packages for the frontend code, and the `black` package for the backend code), run:
+    
+    make autolint

@@ -1,6 +1,8 @@
-from shot_diet.app import app, db
-from flask import render_template, jsonify
+from flask import jsonify
 
-@app.route('/api/test')
+from shot_diet.app import app
+
+
+@app.route("/api/test")
 def index():
     return jsonify({"message": "Hello, world!"})
