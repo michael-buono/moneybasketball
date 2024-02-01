@@ -77,10 +77,12 @@ To add any python packages, ensure you are running in the virtual environment, i
     pip freeze > requirements.txt
 
 ## Makefile
-You can find helpful commands for linting and autolinting in the `Makefile`. For example, to execute the lint checks, which are a prequisite for merging to `main`, run:
+You can find helpful commands for linting and autolinting in the `Makefile`. For example, to execute the lint checks, which must pass in order to merge to `main`, run:
 
     make lint
 
 To lint in place (using the `eslint` and `prettier` npm packages for the frontend code, and the `black` package for the backend code), run:
     
     make autolint
+
+Note that this will edit the files in place.
