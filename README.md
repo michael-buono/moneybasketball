@@ -67,10 +67,12 @@ This command will start the React app in development mode. Open http://localhost
 ## Adding Dependencies
 ### Frontend
 To add any npm packages, run
+
     npm install --save-dev <package>
 
 ### Backend
 To add any python packages, ensure you are running in the virtual environment, install the required packages, and then output the results of `pip freeze` to `backend/requirements.txt`.
+
     cd backend
     pip freeze > requirements.txt
 
