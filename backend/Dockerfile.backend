@@ -1,0 +1,27 @@
+# Dockerfile.backend
+FROM python:3.11-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Install system dependencies (if any)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libsqlite3-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy the requirements file and install Python dependencies
+COPY ./requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the backend code into the container
+COPY ./shot_diet /app/shot_diet
+
+# Expose the port the Flask app runs on
+EXPOSE 5000
+
+ENV FLASK_APP=/app/shot_diet/app/__init__.py
+ENV FLASK_RUN_HOST=0.0.0.0
+
+# Command to run the Flask application
+CMD ["flask", "run"]

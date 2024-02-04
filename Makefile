@@ -8,6 +8,12 @@ lint-python:
 autolint-python:
 	cd backend && black .
 
+docker-build-backend:
+	cd backend && docker build -t flask-backend -f Dockerfile.backend .
+
+docker-run-backend:
+	cd backend && docker run -p 5000:5000 flask-backend
+
 # JavaScript tasks
 lint-js:
 	cd frontend && isort --check-only .

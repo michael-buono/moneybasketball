@@ -23,3 +23,4 @@ app.extensions["sqlalchemy"] = db
 CORS(app)
 
 # Import and register the blueprints or routes
+from shot_diet.app import routes
