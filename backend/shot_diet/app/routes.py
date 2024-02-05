@@ -1,8 +1,9 @@
 from flask import jsonify
+from flask import Blueprint
 
-from shot_diet.app import app
+bp = Blueprint("main", __name__)
 
 
-@app.route("/api/test")
+@bp.route("/api/test")
 def index():
     return jsonify({"message": "Hello, world!"})

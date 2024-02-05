@@ -86,3 +86,7 @@ To lint in place (using the `eslint` and `prettier` npm packages for the fronten
     make autolint
 
 Note that this will edit the files in place.
+
+To launch a development server, run `make run` to build the latest versions of the frontend and backend containers and run them, via `docker-compose up --build`
+
+    make run
