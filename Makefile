@@ -9,10 +9,10 @@ autolint-python:
 	cd backend && black .
 
 docker-build-backend:
-	cd backend && docker build -t flask-backend -f Dockerfile.backend .
+	docker build -t flask-backend -f Dockerfile.backend .
 
 docker-run-backend:
-	cd backend && docker run -p 5000:5000 flask-backend
+	docker run -p 5000:5000 flask-backend
 
 # JavaScript tasks
 lint-js:
@@ -25,6 +25,14 @@ autolint-js:
 	cd frontend && npx eslint --fix src
 	cd frontend && npx prettier --write src
 
+docker-build-frontend:
+	docker build -t flask-frontend -f Dockerfile.frontend .
+
+docker-run-frontend:
+	docker run -p 3000:3000 flask-frontend
+
+run:
+	docker-compose up --build
 # Combined tasks
 autolint: autolint-js autolint-python lint
 lint: lint-python lint-js
