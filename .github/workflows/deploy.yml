@@ -2,6 +2,8 @@ name: Deploy to Cloud Storage and Cloud Run
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [ main ]
 
 jobs:
   setup:
@@ -46,10 +48,11 @@ jobs:
         run: |
           npm install
           npm run build
+        working-directory: ./frontend/
 
       - name: Deploy to Google Cloud Storage
         uses: google-github-actions/upload-cloud-storage@v0.7.0
         with:
-          path: build
+          path: ./frontend/build
           destination: gs://${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_GCS_BUCKET }}
 
