@@ -31,7 +31,6 @@ export default function App() {
         <Paper key={link.label} padding="xs" style={{ marginBottom: "8px", cursor: "pointer" }}>
             <Button
                 key={link.label}
-                href="#"
                 data-active={activeLink === link.label || undefined}
                 component={Link}
                 to={link.path}
