@@ -1,58 +1,62 @@
-name: Deploy to Cloud Storage and Cloud Run
+name: Build Docker Containers and Push to Google Artifact Registry
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [ main ]
+  push:
+    branches:
+      - main
 
 jobs:
-  setup:
-    name: Setup Google Cloud
+  build-backend:
     runs-on: ubuntu-latest
-    outputs:
-      project_id: ${{ steps.set_vars.outputs.project_id }}
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     steps:
-      - name: Setup gcloud CLI
-        uses: google-github-actions/setup-gcloud@v0
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
         with:
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          export_default_credentials: true
-
-      - name: Fetch project ID
-        id: set_vars
-        run: echo "::set-output name=project_id::$(gcloud config get-value project)"
-
-  deploy-backend:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Build and push Docker image to Google Container Registry
-        run: |
-          docker build -t ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/moneybasketball/moneybasketball-api:$GITHUB_SHA -f Dockerfile.backend .
-          docker push ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/moneybasketball/moneybasketball-api:$GITHUB_SHA
-
-      - name: Deploy to Cloud Run
-        run: |
-          gcloud run deploy moneybasketball-api --image ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/moneybasketball/moneybasketball-api:$GITHUB_SHA --platform managed --region ${{ secrets.GCP_REGION }}
-
-  deploy-frontend:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Install dependencies and build the frontend
-        run: |
-          npm install
-          npm run build
-        working-directory: ./frontend/
-
-      - name: Deploy to Google Cloud Storage
-        uses: google-github-actions/upload-cloud-storage@v0.7.0
+          workload_identity_provider: projects/${{ secrets.GCP_PROJECT_ID }}/locations/global/workloadIdentityPools/${{ secrets.GCP_WORKLOAD_IDENTITY_POOL_ID }}/providers/${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER_ID }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
         with:
-          path: ./frontend/build
-          destination: gs://${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_GCS_BUCKET }}
-
+          version: '>= 363.0.0'
+      - name: Docker Auth
+        run: |-
+          gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev --quiet
+      - name: Build and Push Backend
+        run: |
+          docker build -t ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_NAME }}/moneybasketball/moneybasketball-api:$GITHUB_SHA -f Dockerfile.backend .
+          docker push ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_NAME }}/moneybasketball/moneybasketball-api:$GITHUB_SHA
+      - name: Optionally push :latest tag
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker build -t ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_NAME }}/moneybasketball/moneybasketball-api:latest -f Dockerfile.backend .
+          docker push ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_NAME }}/moneybasketball/moneybasketball-api:latest
+  build-frontend:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/${{ secrets.GCP_PROJECT_ID }}/locations/global/workloadIdentityPools/${{ secrets.GCP_WORKLOAD_IDENTITY_POOL_ID }}/providers/${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER_ID }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+      - uses: 'google-github-actions/setup-gcloud@v2'
+        with:
+          version: '>= 363.0.0'
+      - name: Docker Auth
+        run: |-
+          gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev --quiet
+      - name: Build and Push Backend
+        run: |
+          docker build -t ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_NAME }}/moneybasketball/moneybasketball-fe:$GITHUB_SHA -f Dockerfile.frontend .
+          docker push ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_NAME }}/moneybasketball/moneybasketball-fe:$GITHUB_SHA
+      - name: Optionally push :latest tag
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker build -t ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_NAME }}/moneybasketball/moneybasketball-fe:latest -f Dockerfile.frontend .
+          docker push ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_NAME }}/moneybasketball/moneybasketball-fe:latest

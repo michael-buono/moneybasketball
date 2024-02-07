@@ -1,10 +1,10 @@
 version: '3.8'
 services:
-  api:
+  moneybasketball-api:
     build: 
       context: .
       dockerfile: Dockerfile.backend
-  frontend:
+  moneybasketball-fe:
     build:
       context: .
       dockerfile: Dockerfile.frontend
