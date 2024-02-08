@@ -8,7 +8,7 @@ class Game(db.Model):
 
     # We use all caps to indicate a field that is named by the NBA's dataset,
     # lowercase for the fields we are generating ourselves.
-    GAME_ID = db.Column(db.Integer, nullable=False)
+    GAME_ID = db.Column(db.Integer, nullable=False, index=True)
     HTM = db.Column(db.String(100))
     VTM = db.Column(db.String(100))
     GAME_DATE = db.Column(db.String(100))
