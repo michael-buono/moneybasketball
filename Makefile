@@ -32,7 +32,8 @@ docker-run-frontend:
 	docker run -p 3000:3000 flask-frontend
 
 run:
-	docker-compose up --build
+	docker-compose up --build --remove-orphans
+
 # Combined tasks
 autolint: autolint-js autolint-python lint
 lint: lint-python lint-js
