@@ -23,6 +23,7 @@
     "react-select": "^5.7.7",
     "recharts": "^2.8.0",
     "shotchart.d3.ts": "^0.1.34",
+    "tabler-icons-react": "^1.56.0",
     "victory": "^36.6.11",
     "web-vitals": "^2.1.4"
   },

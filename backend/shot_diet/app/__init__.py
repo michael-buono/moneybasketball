@@ -1,11 +1,14 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_migrate import Migrate
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import logging
 from google.cloud.sql.connector import Connector, IPTypes
 import os
 from shot_diet.database import db
 from .routes import bp
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -34,10 +37,17 @@ def create_app():
 
         app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://"
         app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"creator": getconn}
-    else:
+    elif environment == "docker_development":
         logger.info("Setting up development database")
         app.config["SQLALCHEMY_DATABASE_URI"] = (
-            "mysql+pymysql://moneybasketball:currywaydowntownbang@db/moneybasketball_test?charset=utf8mb4"
+            f"mysql+pymysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@db/{os.getenv('MYSQL_DATABASE')}?charset=utf8mb4"
+        )
+    # For things like flask shell, we dont want to depend on having the docker environment running
+    # Ensure you have created the database `moneybasketball_test` in your local mysql database
+    # and have started it with something like `brew services start mysql`
+    else:
+        app.config["SQLALCHEMY_DATABASE_URI"] = (
+            "mysql+pymysql://root@127.0.0.1/moneybasketball_test?charset=utf8mb4"
         )
 
     db.init_app(app)
@@ -47,9 +57,16 @@ def create_app():
 
     # Initialize Flask migrate, CORS, and setup our routes
     Migrate(app, db)
-    CORS(app)
+    domain = os.getenv("ORIGIN_DOMAIN", "localhost")
+    CORS(app, resources={r"/api/*": {"origins": domain}})
     app.register_blueprint(bp)
 
+    # API rate limiting
+    Limiter(
+        app=app,
+        key_func=get_remote_address,
+        default_limits=["400 per day", "100 per hour"],
+    )
     # Database initialization for local development,
     # Since we get a new db every time we run docker-compose up
     if environment == "development":

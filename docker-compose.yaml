@@ -7,8 +7,13 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile.backend
-    ports: ["5000:5000"]
     depends_on: [db]
+    ports: ["5001:5000"]
+    environment:
+      FLASK_ENV: docker_development
+      MYSQL_DATABASE: moneybasketball_test
+      MYSQL_USER: moneybasketball
+      MYSQL_PASSWORD: currywaydowntownbang
   moneybasketball-fe:
     build:
       context: .

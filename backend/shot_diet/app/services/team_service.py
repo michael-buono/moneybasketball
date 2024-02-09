@@ -8,7 +8,7 @@ def get_or_fetch_teams():
     if Team.query.count() < 30:
         # Fetch teams from the API
         fetch_teams()
-    return [{"team_id": t.team_id, "full_name": t.full_name} for t in Team.query.all()]
+    return [t.full_name for t in Team.query.all()]
 
 
 def fetch_teams():
