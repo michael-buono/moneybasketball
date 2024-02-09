@@ -5,9 +5,20 @@ services:
       context: .
       dockerfile: Dockerfile.backend
     ports: ["5000:5000"]
+    depends_on: [db]
   moneybasketball-fe:
     build:
       context: .
       dockerfile: Dockerfile.frontend
     ports:
       - "80:80"
+    depends_on: [moneybasketball-api]    
+  db:
+    image: mariadb:10.6
+    ports:
+      - "3306:3306"  # Map internal 3306 to host's 3307
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: moneybasketball_test
+      MYSQL_USER: moneybasketball
+      MYSQL_PASSWORD: currywaydowntownbang
