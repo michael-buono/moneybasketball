@@ -1,6 +1,5 @@
 import pandas as pd
-
-from shot_diet.app import db
+from shot_diet.database import db
 
 
 class Player(db.Model):
