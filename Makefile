@@ -1,4 +1,5 @@
 # Makefile
+SHELL := /bin/bash
 
 # Python tasks
 lint-python:
@@ -30,6 +31,15 @@ docker-build-frontend:
 
 docker-run-frontend:
 	docker run -p 3000:3000 flask-frontend
+
+exec-shell:
+	@POD_NAME=$$(kubectl get pods -n moneybasketball --no-headers -o custom-columns=":metadata.name" | grep moneybasketball-api- | head -n 1); \
+	if [ -z "$$POD_NAME" ]; then \
+		echo "No pod found matching 'moneybasketball-api-<somestring>' pattern"; \
+	else \
+		echo "Executing shell in pod $$POD_NAME"; \
+		kubectl exec -it $$POD_NAME -n moneybasketball -- /bin/sh; \
+	fi
 
 run:
 	docker-compose up --build --remove-orphans

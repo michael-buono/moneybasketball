@@ -4,7 +4,7 @@ from shot_diet.app import db
 class LineupTeamYear(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     lineup_id = db.Column(
-        db.Integer, db.ForeignKey("lineup.GROUP_ID"), nullable=False, index=True
+        db.String(255), db.ForeignKey("lineup.GROUP_ID"), nullable=False, index=True
     )
     team_id = db.Column(db.Integer, db.ForeignKey("team.team_id"), nullable=False)
     season_year = db.Column(db.String(255), nullable=False)

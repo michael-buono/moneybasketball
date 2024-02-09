@@ -20,7 +20,8 @@ class Team(db.Model):
     abbreviation = db.Column(db.String(255))
     nickname = db.Column(db.String(255))
     city = db.Column(db.String(255))
-    team_id = db.Column(db.Integer, nullable=False)
+    state = db.Column(db.String(255))
+    team_id = db.Column(db.Integer, nullable=False, index=True)
 
     player_shot_team_years = db.relationship(
         "PlayerShotTeamYear", backref="team", lazy=True
