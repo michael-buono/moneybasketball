@@ -15,6 +15,7 @@ import {
 } from "@mantine/core";
 import { Route, Routes, Link, useLocation } from "react-router-dom";
 import ApiTest from "./ApiTest.jsx";
+import Teams from "./Teams.jsx";
 
 export default function App() {
     const location = useLocation();
@@ -22,7 +23,8 @@ export default function App() {
     const [opened, setOpened] = useState(false);
     const navLinks = [
         { label: "Home", path: "/" },
-        { label: "API Test", path: "/api-test" }
+        { label: "API Test", path: "/api-test" },
+        { label: "Teams", path: "/teams" }
     ];
     const initialActiveLink = navLinks.find((link) => link.path === location.pathname)?.label || "Home";
     const [activeLink, setActiveLink] = useState(initialActiveLink); // Default active link
@@ -79,6 +81,7 @@ export default function App() {
         >
             <Routes>
                 <Route path="/api-test" element={<ApiTest />} />
+                <Route path="/teams" element={<Teams />} />
                 <Route path="/" element={<Text>NBA Shot Diet</Text>} />
             </Routes>
         </AppShell>
