@@ -2,7 +2,6 @@
 # Ignore the imported but not used errors from eslint,
 # as we want to be able to test these models via `flask shell`
 #
-from shot_diet.app import db  # noqa: F401
 from .game import Game  # noqa: F401
 from .lineup_team_year import LineupTeamYear  # noqa: F401
 from .player import Player  # noqa: F401

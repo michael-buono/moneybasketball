@@ -1,3 +1,6 @@
+# NOTE: This file is only for local development.
+# In production, we build the backend and frontend containers separately,
+# and deploy to GKE using K8s yaml files.
 version: '3.8'
 services:
   moneybasketball-api:
@@ -12,7 +15,7 @@ services:
       dockerfile: Dockerfile.frontend
     ports:
       - "80:80"
-    depends_on: [moneybasketball-api]    
+    depends_on: [moneybasketball-api]
   db:
     image: mariadb:10.6
     ports:
